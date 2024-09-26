@@ -1,4 +1,11 @@
-import { FaHeart, FaStethoscope, FaHandsHelping, FaInstagram, FaFacebook, FaTwitter } from 'react-icons/fa';
+import {
+  FaHeart,
+  FaStethoscope,
+  FaHandsHelping,
+  FaInstagram,
+  FaFacebook,
+  FaTwitter,
+} from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -24,16 +31,24 @@ const Footer = () => {
             <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
             <ul>
               <li className="mb-2">
-                <a href="#" className="hover:underline">Find a Doctor</a>
+                <a href="#" className="hover:underline">
+                  Find a Doctor
+                </a>
               </li>
               <li className="mb-2">
-                <a href="#" className="hover:underline">About Us</a>
+                <a href="#" className="hover:underline">
+                  About Us
+                </a>
               </li>
               <li className="mb-2">
-                <a href="#" className="hover:underline">Contact Us</a>
+                <a href="#" className="hover:underline">
+                  Contact Us
+                </a>
               </li>
               <li className="mb-2">
-                <a href="#" className="hover:underline">FAQ</a>
+                <a href="#" className="hover:underline">
+                  FAQ
+                </a>
               </li>
             </ul>
           </div>

@@ -11,4 +11,10 @@ router.put(
   userProfileController.updateUserProfile
 );
 
+router.get(
+  "/appointment",
+  verifyUserToken,
+  userProfileController.getAppointmentsByUserId
+);
+
 module.exports = router;

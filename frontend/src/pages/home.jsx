@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
-import { FaPlay, FaUserMd, FaHospital, FaAmbulance } from "react-icons/fa";
+import {
+  FaPlay,
+  FaUserMd,
+  FaHospital,
+  FaAmbulance,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 import HeroImage from "../assets/HeroImage.png";
 import about from "../assets/about.png";
 import cta from "../assets/cta.png";
+import { useSelector } from "react-redux";
 
 const Home = () => {
+  const auth = useSelector((state) => state.auth);
   const [scrolled, setScrolled] = useState(false);
   const [currentReview, setCurrentReview] = useState(0);
   const [openFAQ, setOpenFAQ] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,22 +26,6 @@ const Home = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const VideoPopup = () => {
-    const [youtubeID, setYoutubeID] = useState(null);
-
-    const getYouTubeID = (url) => {
-      const regExp =
-        /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = url.match(regExp);
-      return match && match[2].length === 11 ? match[2] : null;
-    };
-
-    const handleButtonClick = () => {
-      const videoUrl = "https://www.youtube.com/watch?v=To9VzfdWYlc&t=10s";
-      setYoutubeID(getYouTubeID(videoUrl)); // Extract and set the YouTube video ID
-    };
-  };
 
   const reviews = [
     {
@@ -101,7 +95,7 @@ const Home = () => {
     const regExp =
       /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    return match && match[2].length >= 11 ? match[2] : null;
   };
 
   const handleButtonClick = () => {
@@ -131,19 +125,134 @@ const Home = () => {
             />
             <span className="font-bold text-2xl text-blue-900">TheraWell</span>
           </div>
+          {/* Hamburger Menu Icon */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-blue-900 focus:outline-none"
+            >
+              {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            </button>
+          </div>
+          {/* Navigation Links */}
           <ul className="hidden md:flex space-x-12">
-            {["Home", "About", "Find Doctor", "Blog", "Contact"].map((item) => (
-              <li key={item}>
+            <li>
+              <a
+                href="/"
+                className="text-blue-900 hover:text-blue-600 text-lg font-medium relative after:absolute after:bg-blue-600 after:h-0.5 after:w-0 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full"
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="/aboutus"
+                className="text-blue-900 hover:text-blue-600 text-lg font-medium relative after:absolute after:bg-blue-600 after:h-0.5 after:w-0 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full"
+              >
+                About
+              </a>
+            </li>
+            <li>
+              <a
+                href="/catalog"
+                className="text-blue-900 hover:text-blue-600 text-lg font-medium relative after:absolute after:bg-blue-600 after:h-0.5 after:w-0 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full"
+              >
+                Find Doctor
+              </a>
+            </li>
+            <li>
+              <a
+                href="/contact"
+                className="text-blue-900 hover:text-blue-600 text-lg font-medium relative after:absolute after:bg-blue-600 after:h-0.5 after:w-0 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full"
+              >
+                Contact
+              </a>
+            </li>
+            {!auth.isAuthenticated ? (
+              <li>
                 <a
-                  href="#"
+                  href="/loginComponent"
                   className="text-blue-900 hover:text-blue-600 text-lg font-medium relative after:absolute after:bg-blue-600 after:h-0.5 after:w-0 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full"
                 >
-                  {item}
+                  SignIn
                 </a>
               </li>
-            ))}
+            ) : (
+              <li>
+                <a
+                  href="/logout"
+                  className="text-blue-900 hover:text-blue-600 text-lg font-medium relative after:absolute after:bg-blue-600 after:h-0.5 after:w-0 after:left-0 after:bottom-0 after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  Logout
+                </a>
+              </li>
+            )}
           </ul>
         </div>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white shadow-lg">
+            <ul className="flex flex-col items-center space-y-4 py-4">
+              <li>
+                <a
+                  href="/"
+                  className="text-blue-900 hover:text-blue-600 text-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/aboutus"
+                  className="text-blue-900 hover:text-blue-600 text-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/catalog"
+                  className="text-blue-900 hover:text-blue-600 text-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Find Doctor
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contact"
+                  className="text-blue-900 hover:text-blue-600 text-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact
+                </a>
+              </li>
+              {!auth.isAuthenticated ? (
+                <li>
+                  <a
+                    href="/loginComponent"
+                    className="text-blue-900 hover:text-blue-600 text-lg font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    SignIn
+                  </a>
+                </li>
+              ) : (
+                <li>
+                  <a
+                    href="/logout"
+                    className="text-blue-900 hover:text-blue-600 text-lg font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Logout
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -213,21 +322,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Statistics Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-around">
-            <StatCard
-              icon={<FaUserMd />}
-              number="150K+"
-              text="Patient Recover"
-            />
-            <StatCard icon={<FaHospital />} number="870+" text="Doctors" />
-            <StatCard icon={<FaAmbulance />} number="400+" text="Hospitals" />
-          </div>
-        </div>
-      </section>
-
       {/* About Us Section */}
       <section className="py-16 bg-gradient-to-r from-white via-blue-50 to-blue-100">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
@@ -268,81 +362,111 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-blue-900 text-center mb-4">
-            Some Reviews
-          </h2>
-          <h3 className="text-2xl font-semibold text-blue-700 text-center mb-12">
-            OF OUR CLIENTS
-          </h3>
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-stretch">
-              {reviews.map((review, index) => (
-                <div
-                  key={index}
-                  className={`w-1/3 px-4 transition-all duration-300 ${
-                    index === currentReview
-                      ? "opacity-100 scale-100"
-                      : "opacity-50 scale-95"
+
+{/* Reviews Section */}
+<div>
+<section className="py-16 bg-white">
+  <div className="container mx-auto px-4">
+    <h2 className="text-4xl font-bold text-blue-900 text-center mb-4">
+      Some Reviews
+    </h2>
+    <h3 className="text-2xl font-semibold text-blue-700 text-center mb-12">
+      OF OUR CLIENTS
+    </h3>
+    <div className="max-w-4xl mx-auto">
+      {/* For small screens, show one review at a time */}
+      <div className="block md:hidden">
+        <div className="relative">
+          <div className="bg-white rounded-lg p-6 shadow-lg h-full flex flex-col">
+            <div className="flex items-center mb-4">
+              <div>
+                <h4 className="text-lg font-semibold">
+                  {reviews[currentReview].name}
+                </h4>
+                <p className="text-gray-600 text-sm">
+                  {reviews[currentReview].location}
+                </p>
+              </div>
+            </div>
+            <p className="text-gray-700 mb-4 flex-grow">
+              {reviews[currentReview].text}
+            </p>
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < Math.floor(reviews[currentReview].rating)
+                      ? "text-yellow-400"
+                      : "text-gray-300"
                   }`}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  <div className="bg-white rounded-lg p-6 shadow-lg h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <img
-                        src={`/avatar-${index + 1}.jpg`}
-                        alt={review.name}
-                        className="w-16 h-16 rounded-full mr-4"
-                      />
-                      <div>
-                        <h4 className="text-lg font-semibold">{review.name}</h4>
-                        <p className="text-gray-600 text-sm">
-                          {review.location}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 mb-4 flex-grow">
-                      {review.text}
-                    </p>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < Math.floor(review.rating)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
               ))}
             </div>
-            <div className="flex justify-center mt-8">
-              <button
-                onClick={prevReview}
-                className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 mx-2"
-              >
-                Previous
-              </button>
-              <button
-                onClick={nextReview}
-                className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 mx-2"
-              >
-                Next
-              </button>
-            </div>
+          </div>
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={prevReview}
+              className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 mx-2"
+            >
+              Previous
+            </button>
+            <button
+              onClick={nextReview}
+              className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300 mx-2"
+            >
+              Next
+            </button>
           </div>
         </div>
-      </section>
-
+      </div>
+      {/* For medium and larger screens, show reviews in a grid */}
+      <div className="hidden md:flex items-stretch">
+        {reviews.map((review, index) => (
+          <div
+            key={index}
+            className="w-full md:w-1/3 px-4 mb-8 md:mb-0"
+          >
+            <div className="bg-white rounded-lg p-6 shadow-lg h-full flex flex-col">
+              <div className="flex items-center mb-4">
+                <div>
+                  <h4 className="text-lg font-semibold">{review.name}</h4>
+                  <p className="text-gray-600 text-sm">
+                    {review.location}
+                  </p>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-4 flex-grow">
+                {review.text}
+              </p>
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <svg
+                    key={i}
+                    className={`w-5 h-5 ${
+                      i < Math.floor(review.rating)
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    }`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+</div>
       {/* Values Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -454,7 +578,7 @@ const Home = () => {
       <footer className="bg-[#307BC4] text-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center text-center">
-            <h3 className="text-lg font-semibold">Company Name</h3>
+            <h3 className="text-lg font-semibold">TheraWell</h3>
             <p>© 2024 All rights reserved.</p>
             <div className="flex space-x-6 mt-4">
               <a href="#" className="hover:text-gray-300 transition">

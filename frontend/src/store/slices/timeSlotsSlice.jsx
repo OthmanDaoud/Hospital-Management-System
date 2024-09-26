@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { setAppointmentSlots } from "../thunks/timeSlotThunks";
 
 const timeSlotsSlice = createSlice({
   name: "timeSlots",
@@ -14,6 +15,21 @@ const timeSlotsSlice = createSlice({
       const date = action.payload;
       return state.dateTimeSlots[date] || []; // Retrieve slots for the specific date
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(setAppointmentSlots.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(setAppointmentSlots.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.dateTimeSlots[action.payload.date] = action.payload.slots;
+        state.error = null;
+      })
+      .addCase(setAppointmentSlots.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
   },
 });
 

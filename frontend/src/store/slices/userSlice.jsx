@@ -1,11 +1,8 @@
-// src/store/slices/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Existing login and register actions...
-
 export const getUserProfile = createAsyncThunk(
-  "auth/getUserProfile",
+  "user/getUserProfile",
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get("http://localhost:5000/api/user/profile", {
@@ -13,14 +10,19 @@ export const getUserProfile = createAsyncThunk(
       });
       return res.data.user;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "An error occurred");
+      return rejectWithValue(
+        error.response?.data?.error || "An error occurred"
+      );
     }
   }
 );
 
 export const updateUserProfile = createAsyncThunk(
-  "auth/updateUserProfile",
-  async ({ name, email, currentPassword, newPassword }, { rejectWithValue }) => {
+  "user/updateUserProfile",
+  async (
+    { name, email, currentPassword, newPassword },
+    { rejectWithValue }
+  ) => {
     try {
       const res = await axios.put(
         "http://localhost:5000/api/user/profile",
@@ -29,25 +31,43 @@ export const updateUserProfile = createAsyncThunk(
       );
       return res.data.user;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "An error occurred");
+      return rejectWithValue(
+        error.response?.data?.error || "An error occurred"
+      );
     }
   }
 );
 
-const authSlice = createSlice({
-  name: "auth",
+export const fetchAppointments = createAsyncThunk(
+  "appointments/fetchAppointments",
+  async () => {
+    const response = await axios.get(
+      `http://localhost:5000/api/user/appointment`,
+      { withCredentials: true }
+    );
+    console.log("fetchAppointments", response);
+
+    return response.data;
+  }
+);
+
+const userSlice = createSlice({
+  name: "profile",
   initialState: {
     user: null,
     isAuthenticated: false,
     loading: false,
+    appointments: [], // Initialized appointments array
     error: null,
+    successMessage: null,
   },
   reducers: {
-    // Existing reducers...
+    clearMessages: (state) => {
+      state.error = null;
+      state.successMessage = null;
+    },
   },
   extraReducers: (builder) => {
-    // Existing extra reducers...
-
     builder
       .addCase(getUserProfile.pending, (state) => {
         state.loading = true;
@@ -65,18 +85,30 @@ const authSlice = createSlice({
       .addCase(updateUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.successMessage = null;
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.user = action.payload;
         state.loading = false;
+        state.successMessage = "Profile updated successfully";
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
+      })
+      .addCase(fetchAppointments.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchAppointments.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.appointments = action.payload;
+      })
+      .addCase(fetchAppointments.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
       });
   },
 });
 
-// Export actions and reducer...
-
-export default authSlice.reducer;
+export const { clearMessages } = userSlice.actions;
+export default userSlice.reducer;

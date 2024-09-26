@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import TabSelector from "./TabSelector";
 import PatientRecords from "./PatientRecords";
-import AppointmentSettings from "./AppointmentSettings";
+import Appointments from "./Appointments";
 import Profile from "./Profile";
 import DoctorAppointmentSetter from "./DoctorAppointmentSetter";
 
 const DoctorProfilePage = () => {
-  const [activeTab, setActiveTab] = useState("patients");
+  const [activeTab, setActiveTab] = useState("profile");
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
@@ -18,7 +18,7 @@ const DoctorProfilePage = () => {
 
       <div className="bg-white p-4 rounded-lg shadow">
         {activeTab === "patients" && <PatientRecords />}
-        {activeTab === "appointments" && <AppointmentSettings />}
+
         {activeTab === "profile" && <Profile />}
         {activeTab === "setAppointment" && <DoctorAppointmentSetter />}
       </div>

@@ -16,29 +16,47 @@ exports.getAvailableAppointments = async (req, res) => {
 };
 exports.bookAppointment = async (req, res) => {
   try {
-    const token = req.cookies.token; // تأكد من أنك تستخدم اسم الكوكي المناسب
+    const token = req.cookies.token;
+    console.log(token);
     if (!token) {
       return res.status(400).json({ message: "User is not authenticated" });
     }
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const patient_id = decodedToken.userId; // احصل على userId من التوكن
-    const { appointment_id, notes } = req.body;
+    const patient_id = decodedToken.userId;
+    const { appointment_id, notes, amount, payment_details } = req.body;
 
-    const result = await db.query(
+    // بدء المعاملة
+    await db.query("BEGIN");
+
+    // حجز الموعد
+    const appointmentResult = await db.query(
       "UPDATE Appointments SET patient_id = $1, isTimeSlotAvailable = FALSE, notes = $3 WHERE appointment_id = $2 AND isTimeSlotAvailable = TRUE RETURNING *",
       [patient_id, appointment_id, notes]
     );
 
-    if (result.rows.length === 0) {
+    if (appointmentResult.rows.length === 0) {
+      await db.query("ROLLBACK");
       return res
         .status(400)
         .json({ message: "Appointment not available or already booked" });
     }
 
-    res.status(200).json(result.rows[0]);
-  } catch (error) {
+    // إنشاء سجل الفاتورة
+    const billingResult = await db.query(
+      "INSERT INTO Billing (patient_id, amount, status, payment_date) VALUES ($1, $2, $3, $4) RETURNING *",
+      [patient_id, amount, "paid", new Date()]
+    );
 
+    // إنهاء المعاملة
+    await db.query("COMMIT");
+
+    res.status(200).json({
+      appointment: appointmentResult.rows[0],
+      billing: billingResult.rows[0],
+    });
+  } catch (error) {
+    await db.query("ROLLBACK");
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
@@ -65,4 +83,3 @@ exports.createAvailableAppointments = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-

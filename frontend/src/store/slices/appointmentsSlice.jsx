@@ -1,21 +1,23 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 export const fetchAppointments = createAsyncThunk(
-  'appointments/fetchAppointments',
+  "appointments/fetchAppointments",
   async () => {
-    const response = await axios.get("http://localhost:5000/api/appointments/admin");
+    const response = await axios.get(
+      "http://localhost:5000/api/appointment/admin"
+    );
     return response.data;
   }
 );
 
 const appointmentsSlice = createSlice({
-  name: 'appointments',
+  name: "appointments",
   initialState: {
     appointments: [],
     loading: true,
     error: null,
-    searchTerm: '',
+    searchTerm: "",
     currentPage: 1,
     appointmentsPerPage: 5,
   },

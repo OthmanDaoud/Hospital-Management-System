@@ -15,16 +15,6 @@ const TabSelector = ({ activeTab, setActiveTab }) => {
       </button>{" "}
       <button
         className={`px-4 py-2 rounded-t-lg ${
-          activeTab === "appointments"
-            ? "bg-white text-blue-600"
-            : "bg-gray-200 text-gray-600"
-        }`}
-        onClick={() => setActiveTab("appointments")}
-      >
-        Appointments
-      </button>
-      <button
-        className={`px-4 py-2 rounded-t-lg ${
           activeTab === "patients"
             ? "bg-white text-blue-600"
             : "bg-gray-200 text-gray-600"

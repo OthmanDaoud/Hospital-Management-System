@@ -9,7 +9,7 @@ const appointmentsRoutes = require("./routes/appointmentsRoutes");
 
 const userRoutesAdmin = require("./routes/userRoutesAdmin"); // Add this line
 const doctorRoutesAdmin = require("./routes/doctorRoutesAdmin"); // Import the new route
-// const appointmentRoutesAdmin = require("./routes/appointmentRoutesAdmin"); // Import appointment routes
+const appointmentRoutesAdmin = require("./routes/appointmentRoutesAdmin"); // Import appointment routes
 const contactRoutesAdmin = require("./routes/contactRoutesAdmin"); // Add this line
 
 const userProfileRoutes = require("./routes/userProfileRoutes");
@@ -17,6 +17,10 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const appointmentpatientRoutes = require("./routes/appointmentpatientRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
+
+const paymentRoutes = require("./routes/paymentRoutes");
+
+const PatientRecordRoutes = require("./routes/PatientRecordRoutes");
 
 require("dotenv").config();
 const doctorcatalogRoutes = require("./routes/doctorscatalogRoutes");
@@ -48,11 +52,13 @@ app.use("/api/feedback", feedbackRoutes);
 
 app.use("/api/user", userProfileRoutes);
 app.use("/api/contacts", contactRoutes);
-
+app.use("/api/billing", paymentRoutes);
 app.use("/api", userRoutesAdmin); // Add the user routes here
 app.use("/api", doctorRoutesAdmin); // Use the new route here
-// app.use("/api", appointmentRoutesAdmin); // Use the appointment routes
+app.use("/api", appointmentRoutesAdmin); // Use the appointment routes
 app.use("/api", contactRoutesAdmin); // Add the contact routes here
+
+app.use("/api/patient-records", PatientRecordRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

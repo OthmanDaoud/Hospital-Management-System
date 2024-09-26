@@ -21,7 +21,7 @@ const login = async (req, res) => {
 
     // Generate token
     const doctor_token = jwt.sign(
-      { userId: user.user_id },
+      { userId: user.doctor_id },
       process.env.JWT_SECRET,
       {
         expiresIn: "1h",

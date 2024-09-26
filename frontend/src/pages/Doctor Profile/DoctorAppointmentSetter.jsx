@@ -4,7 +4,8 @@ import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format, addDays } from "date-fns";
 import { setTimeSlots } from "../../store/slices/timeSlotsSlice";
-import axios from "axios";
+import { setAppointmentSlots } from "../../store/thunks/timeSlotThunks";
+import "./Calendar.css";
 
 const DoctorAppointmentSetter = () => {
   const dispatch = useDispatch();
@@ -13,7 +14,9 @@ const DoctorAppointmentSetter = () => {
   const [tempSelectedTimeSlots, setTempSelectedTimeSlots] = useState([]);
 
   const dateKey = format(selectedDate, "yyyy-MM-dd");
-  const dateTimeSlots = useSelector((state) => state.timeSlots.dateTimeSlots);
+  const { dateTimeSlots, status, error } = useSelector(
+    (state) => state.timeSlots
+  );
 
   const timeSlots = [
     "9:00",
@@ -52,46 +55,16 @@ const DoctorAppointmentSetter = () => {
 
   const handleSubmit = async () => {
     try {
-      await postAppointmentSlots(dateKey, tempSelectedTimeSlots);
-
-      dispatch(setTimeSlots({ date: dateKey, slots: tempSelectedTimeSlots }));
-
-      const updatedDateTimeSlots = {
-        ...dateTimeSlots,
-        [dateKey]: tempSelectedTimeSlots,
-      };
-
-      sessionStorage.setItem(
-        "dateTimeSlots",
-        JSON.stringify(updatedDateTimeSlots)
-      );
-
+      await dispatch(
+        setAppointmentSlots({ date: dateKey, slots: tempSelectedTimeSlots })
+      ).unwrap();
       alert(
         `Selected date: ${dateKey}\nSelected time slots: ${tempSelectedTimeSlots.join(
           ", "
         )}\nAppointment slots successfully set.`
       );
-      setIsSubmitted(true);
-    } catch (error) {
-      alert(`Error setting appointment slots: ${error.message}`);
-    }
-  };
-
-  const postAppointmentSlots = async (date, slots) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/appointments/set-slots",
-        {
-          doctor_id: 6,
-          date: date,
-          timeSlots: slots,
-        }
-      );
-      console.log("API Response:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error posting appointment slots:", error);
-      throw error;
+    } catch (err) {
+      alert(`Error setting appointment slots: ${err.message}`);
     }
   };
 
@@ -108,16 +81,18 @@ const DoctorAppointmentSetter = () => {
   }, [dispatch, dateKey]);
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="justify-center p-20">
       <h1 className="text-2xl font-bold mb-4">Set Available Appointments</h1>
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="md:w-1/2">
+      {status === "loading" && <p>Loading...</p>}
+      {status === "failed" && <p>Error: {error}</p>}
+      <div className="flex flex-row gap-4">
+        <div className="w-full">
           <Calendar
             onChange={handleDateChange}
             value={selectedDate}
             minDate={addDays(new Date(), 1)}
             maxDate={addDays(new Date(), 21)}
-            className="w-full"
+            className=" w-full rounded-2xl border-2 border-slate-200 p-8 bg-primarybackground"
           />
         </div>
         <div className="md:w-1/2">

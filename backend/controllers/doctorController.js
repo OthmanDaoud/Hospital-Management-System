@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 exports.getDoctorProfile = async (req, res) => {
   const doctorId = req.user;
   const query =
-    "SELECT doctor_id, name, email, price, years_of_experience, contact_number, availability FROM Doctors WHERE doctor_id = $1";
+    "SELECT *  FROM Doctors WHERE doctor_id = $1";
   const { rows } = await pool.query(query, [doctorId]);
   if (rows.length === 0) {
     return res.status(404).json({ message: "Doctor not found" });

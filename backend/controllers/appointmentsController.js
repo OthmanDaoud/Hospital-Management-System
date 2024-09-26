@@ -26,8 +26,8 @@ const AppointmentsController = {
 
   // New method to set available time slots for a date
   async setAvailableTimeSlots(req, res) {
-    const { doctor_id, date, timeSlots } = req.body;
-
+    const doctor_id = req.user;
+    const { date, timeSlots } = req.body;
     try {
       const newAppointments = await AppointmentsModel.setAvailableTimeSlots(
         doctor_id,
@@ -69,7 +69,7 @@ const AppointmentsController = {
 
   // Get all booked appointments by doctor_id
   async getBookedAppointments(req, res) {
-    const { doctor_id } = req.params;
+    const doctor_id = req.user;
 
     try {
       const bookedAppointments = await AppointmentsModel.getBookedAppointments(

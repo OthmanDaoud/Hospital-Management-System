@@ -11,6 +11,7 @@ exports.getUserProfile = async (req, res) => {
       WHERE user_id = $1
     `;
     const result = await pool.query(query, [userId]);
+    console.log(result.rows);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -28,12 +29,13 @@ exports.getUserProfile = async (req, res) => {
 exports.updateUserProfile = async (req, res) => {
   try {
     const userId = req.user;
+    console.log(userId);
     const { name, email, currentPassword, newPassword } = req.body;
 
     // First, verify the current password
     const userQuery = "SELECT * FROM users WHERE user_id = $1";
     const userResult = await pool.query(userQuery, [userId]);
-    console.log(userResult.rows[0]);
+    console.log("Hello");
     if (userResult.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -72,5 +74,28 @@ exports.updateUserProfile = async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while updating user profile" });
+  }
+};
+
+exports.getAppointmentsByUserId = async (req, res) => {
+  try {
+    // Extract the user ID from the request object
+    const userId = req.user; // or req.params.userId, depending on where userId is stored
+
+    // SQL query to fetch appointments
+    const query = `
+      SELECT * FROM Appointments
+      WHERE patient_id = $1
+      ORDER BY appointment_date, appointment_time
+    `;
+
+    // Execute the query
+    const result = await pool.query(query, [userId]);
+
+    // Return the result rows
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

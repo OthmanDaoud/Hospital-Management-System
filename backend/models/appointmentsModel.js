@@ -19,52 +19,6 @@ const AppointmentsModel = {
   },
 
   // Mthod to set multiple available time slots for a date
-  // async setAvailableTimeSlots(doctor_id, date, timeSlots) {
-  //   const client = await pool.connect();
-
-  //   try {
-  //     await client.query("BEGIN");
-
-  //     const insertedSlots = [];
-
-  //     for (const time of timeSlots) {
-  //       // Check if the slot already exists
-  //       const checkQuery = `
-  //       SELECT * FROM Appointments
-  //       WHERE doctor_id = $1 AND appointment_date = $2 AND appointment_time = $3;
-  //     `;
-  //       const checkResult = await client.query(checkQuery, [
-  //         doctor_id,
-  //         date,
-  //         time,
-  //       ]);
-
-  //       // If the slot doesn't exist, insert it
-  //       if (checkResult.rows.length === 0) {
-  //         const insertQuery = `
-  //         INSERT INTO Appointments (doctor_id, appointment_date, appointment_time)
-  //         VALUES ($1, $2, $3)
-  //         RETURNING *;
-  //       `;
-  //         const insertResult = await client.query(insertQuery, [
-  //           doctor_id,
-  //           date,
-  //           time,
-  //         ]);
-  //         insertedSlots.push(insertResult.rows[0]);
-  //       }
-  //     }
-
-  //     await client.query("COMMIT");
-  //     return insertedSlots;
-  //   } catch (error) {
-  //     await client.query("ROLLBACK");
-  //     console.error("Error in setAvailableTimeSlots:", error);
-  //     throw error;
-  //   } finally {
-  //     client.release();
-  //   }
-  // },
   async setAvailableTimeSlots(doctor_id, date, timeSlots) {
     const client = await pool.connect();
 
@@ -124,14 +78,31 @@ const AppointmentsModel = {
   // Get  booked appointments by doctor_id
   async getBookedAppointments(doctor_id) {
     const query = `
-    SELECT * FROM Appointments WHERE doctor_id = $1 AND istimeslotavailable = false;
+      SELECT 
+        a.appointment_id,
+        a.appointment_date,
+        a.appointment_time,
+        a.status,
+        a.notes,
+        u.user_id,
+        u.name AS patient_name,
+        u.email AS patient_email,
+        u.phone AS patient_phone
+      FROM 
+        Appointments a
+      JOIN 
+        Users u ON a.patient_id = u.user_id
+      WHERE 
+        a.doctor_id = $1 
+        AND a.patient_id IS NOT NULL
+      ORDER BY 
+        a.appointment_date, a.appointment_time;
     `;
-    const values = [doctor_id];
+
     try {
-      const result = await pool.query(query, values);
+      const result = await pool.query(query, [doctor_id]);
       return result.rows;
     } catch (error) {
-      console.error("Error getting booked appointments ");
       throw error;
     }
   },
